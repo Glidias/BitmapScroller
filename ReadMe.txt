@@ -24,11 +24,12 @@ The ideal case for using the Haxe/Alchemy implementation is when your server or 
 
 General observations between the 2 versions
 -------------------------------------------
+For both versions, i cranked the target framerate to 120fps to see how high you can get. For minimised screen sizes, both versions can get beyond the target framerate of 61fps.
 
-For the standard AS3 CopyPixels version, after scrolling through all bitmapdata instances (ie. scrolling through the entire length of the timeline), apparently the scrolling can actually turn out faster than the Haxe/Alchemy's setPixels() version (61 fps throughout), and copyPixels() starts to become very consistent (61 fps throughout).
+For the standard AS3 CopyPixels version, after scrolling through all bitmapdata instances (ie. scrolling through the entire length of the timeline), apparently the scrolling can actually turn out faster than the Haxe/Alchemy's setPixels() version (meeting the target ideal framerate of 61fps compared to the Haxe/Alchemy version which lags behind).
 
 It seems the Flash player has a way of caching previous memory accesses to bitmapData such that once such a bitmapData has been visited before, subsequent copyPixels() calls to that bitmapData would take less far time to execute. In fact, copyPixels() is generally a faster routine compared to setPixels(), and there are times the standard AS3 version can peak at higher FPS compared to the Haxe/Alchemy version. 
 
-The only reason why the Haxe/Alchemy version can appear "faster" is because it avoids the O(n) search, making framerate consistent across the board. If such a search was negated in the regular AS3 version (among other inlined optimisations), the AS3 version could very well be much faster than the Haxe/Alchemy implementation.
+The only reason why the Haxe/Alchemy version can appear "faster" is because it avoids the O(n) search, making framerate consistent across the board. If such a search was negated in the regular AS3 version (among other inlined optimisations), the AS3 version could very well be much faster than the Haxe/Alchemy implementation overall. In fact, the Haxe/Alchemy version still has an inherant O(n) operation through setPixels() which makes it unfriendly for blitting to large screens. 
 
-For Haxe, setPixels() does take a toll due to the very action of having to write every pixel. In that sense, the Haxe alchemy memory implementation isn't necessarily better, and in fact the AS3 copyPixels() version could perform better on some other systems.
+For Haxe, setPixels() does take a toll due to the very action of having to write every pixel. In that sense, the Haxe alchemy memory implementation isn't necessarily better, and in fact the AS3 copyPixels() version performs and scales better on larger screens. 
