@@ -13,10 +13,18 @@ The result is a consistent framerate throughout, regardless of how far in/out yo
 
 In the standard AS3 copyPixels() version, codes had to do a linear "O(n)" search to find the target location from the starting location. So, the further you go down the list, the more unpredicatable the search time would get. Iterating from the last known position index won't work either if in the worse case scenerio, the distance travelled per tick is of extremely large (skip here/there) values. For large lists, this can mean iterating through many indexes to find the current index. 
 
-However, this above-mentioned isn't really very bad in most situations, and in fact, after scrolling through all bitmapdata instances (ie. scrolling through the entire length of the timeline), apparently the scrolling can actually turn out faster than the Haxe/Alchemy's setPixels() version (61 fps throughout), and copyPixels() starts to become very consistent (61 fps throughout). It seems the Flash player has a way of caching previous memory accesses to bitmapData such that once such a bitmapData has been visited before, subsequent copyPixels() calls to that bitmapData would take less far time to execute. In fact, copyPixels() is generally a faster routine compared to setPixels(), and there are times the standard AS3 version can peak at higher FPS compared to the Haxe/Alchemy version. The only reason why the Haxe/Alchemy version can appear "faster" is because it avoids the O(n) search, making framerate consistent across the board. If such a search was negated in the regular AS3 version (among other inlined optimisations), the AS3 version could very well be much faster than the Haxe/Alchemy implementation.
-
-For Haxe, setPixels() does take a toll due to the very action of having to write every pixel. In that sense, the Haxe alchemy memory implementation isn't necessarily better, and in fact the AS3 copyPixels() version could perform better on some other systems.
-
 The Haxe implementation has no limit of the number of n-entries as far as performance is concerned. However, memory usage/storage can be extremely high and time-consuming at the beginning, including storing all pixel data found in the images. However, once everything is cached, you'll get a consistent framerate throughout.
 
 The ideal case for using the Haxe/Alchemy implementation is when your server or developer has already pre-processed the images and fitted them into the actual viewing size during scrolling. Also, for images to be scrolled horizontally, the images had to be read in a translated (rotate 90/270 degrees) fashion into memory, and the bitmap & bitmapData itself had to be rotated 90/270 degrees and the bitmap re-positioned/flipped. If the images loaded in were already rotated, these translations could be avoided on the Flash-side, improving startup time. Also, it's better to NOT cache all images into memory at once, but progressively load/cache images in at intervals.
+
+
+General observations between the 2 versions
+-------------------------------------------
+
+For the standard AS3 CopyPixels version, after scrolling through all bitmapdata instances (ie. scrolling through the entire length of the timeline), apparently the scrolling can actually turn out faster than the Haxe/Alchemy's setPixels() version (61 fps throughout), and copyPixels() starts to become very consistent (61 fps throughout).
+
+It seems the Flash player has a way of caching previous memory accesses to bitmapData such that once such a bitmapData has been visited before, subsequent copyPixels() calls to that bitmapData would take less far time to execute. In fact, copyPixels() is generally a faster routine compared to setPixels(), and there are times the standard AS3 version can peak at higher FPS compared to the Haxe/Alchemy version. 
+
+The only reason why the Haxe/Alchemy version can appear "faster" is because it avoids the O(n) search, making framerate consistent across the board. If such a search was negated in the regular AS3 version (among other inlined optimisations), the AS3 version could very well be much faster than the Haxe/Alchemy implementation.
+
+For Haxe, setPixels() does take a toll due to the very action of having to write every pixel. In that sense, the Haxe alchemy memory implementation isn't necessarily better, and in fact the AS3 copyPixels() version could perform better on some other systems.
