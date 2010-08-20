@@ -3,10 +3,14 @@ About the BitmapScrollerHaxe.hx version
 com.flashartofwar.BitmapScrollerHaxe
 Note: This hx file is just a sample fork modification an old version of BitmapDataSampler and is in no way affiliated to Jesse Freemen/Flash Art Of War Blog. The location of the Haxe file was placed at the same package location for convenience. 
 
+Getting Started
+------------------
 The haxelib.hxml will compile a matching SWC for you, if you have Haxe installed, which will contain the compiled code from the hx file.
 
 Compile BitmapScrollerAppHaxe.as in Flash Player 10 with the compiled SWC library. I don't have a ANT build script at the moment for this (the build.xml is for the standard non-Haxe version). I also replaced the need to -define=CONFIG::mobile to a simple local boolean variable that can be set in the document classes. 
 
+About this Fork
+--------------
 This fork was basically a Haxe-i-fied version of an older (to be depreciated?) BitmapDataCollectionSampler class. As before, this also involves scrolling a bunch of bitmap-datas stored in Alchemy memory and is a similar implementation to that.
 
 The result is a consistent framerate throughout, regardless of how far in/out you're scrolling within the list, the search time is always at "O(1)" constant time. This is achieved by simply moving the ByteArray memory position pointer to match the scrolling value, and calling bitmapData.setPixels(rect, byteArray) to render the bytes. I get 61 fps consistently for smaller screen sizes. For larger screen sizes, I can get 30-55 fps.
