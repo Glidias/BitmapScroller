@@ -1,50 +1,22 @@
-Hello,
+About the BitmapScrollerHaxe.hx version
+-----------------------------------------------
+com.flashartofwar.BitmapScrollerHaxe
+Note: This hx file is just a sample fork modification an old version of BitmapDataSampler and is in no way affiliated to Jesse Freemen/Flash Art Of War Blog. The location of the Haxe file was placed at the same package location for convenience. 
 
-Welcome to my Bitmap Scroller project. Once you have a look through the demo app
-it should be relatively easy to incorporate this into your own project. Here is
-a little info on how to get the demo up and running.
+The haxelib.hxml will compile a matching SWC for you, if you have Haxe installed, which will contain the compiled code from the hx file.
 
-Building Without Ant
+Compile BitmapScrollerAppHaxe.as in Flash Player 10 with the compiled SWC library. I don't have a ANT build script at the moment for this (the build.xml is for the standard non-Haxe version). I also replaced the need to -define=CONFIG::mobile to a simple local boolean variable that can be set in the document classes. 
 
-If you do not want to use ANT you must manually copy the build/bin-resources/images 
-folder to your bin or bin-debug directory and compile the app like you normally 
-would. The main class is called BitmapScrollerApp located in the src folder. This 
-represents a demo class to show off how the BitmapScroller works.
+This fork was basically a Haxe-i-fied version of an older (to be depreciated?) BitmapDataCollectionSampler class. As before, this also involves scrolling a bunch of bitmap-datas stored in Alchemy memory and is a similar implementation to that.
 
-You will also have to set up a few extra lines of code in the advanced compiler area 
-of your project’s settings:
+The result is a consistent framerate throughout, regardless of how far in/out you're scrolling within the list, the search time is always at "O(1)" constant time. This is achieved by simply moving the ByteArray memory position pointer to match the scrolling value, and calling bitmapData.setPixels(rect, byteArray) to render the bytes. I get 61 fps consistently for smaller screen sizes. For larger screen sizes, I can get 30-55 fps.
 
-	-use-network=false (If you are not testing this on a localhost or server)
+In the standard AS3 copyPixels() version, codes had to do a linear "O(n)" search to find the target location from the starting location. So, the further you go down the list, the more unpredicatable the search time would get. Iterating from the last known position index won't work either if in the worse case scenerio, the distance travelled per tick is of extremely large (skip here/there) values. For large lists, this can mean iterating through many indexes to find the current index. 
 
-	-define=CONFIG::mobile,false (If you are compiling for desktop. For mobile 
-	change this to true. This allows you to configure different logic for each 
-	platform which I will talk about later).
+However, this above-mentioned isn't really very bad in most situations, and in fact, after scrolling through all bitmapdata instances (ie. scrolling through the entire length of the timeline), apparently the scrolling can actually turn out faster than the Haxe/Alchemy's setPixels() version (61 fps throughout), and copyPixels() starts to become very consistent (61 fps throughout). It seems the Flash player has a way of caching previous memory accesses to bitmapData such that once such a bitmapData has been visited before, subsequent copyPixels() calls to that bitmapData would take less far time to execute. In fact, copyPixels() is generally a faster routine compared to setPixels(), and there are times the standard AS3 version can peak at higher FPS compared to the Haxe/Alchemy version. The only reason why the Haxe/Alchemy version can appear "faster" is because it avoids the O(n) search, making framerate consistent across the board. If such a search was negated in the regular AS3 version (among other inlined optimisations), the AS3 version could very well be much faster than the Haxe/Alchemy implementation.
 
-	-static-link-runtime-shared-libraries=true (This is important on any project 
-	that uses Flex 4 since it is set to false by default. This may not impact 
-	this project but if you begin embedding assets it is key).
+For Haxe, setPixels() does take a toll due to the very action of having to write every pixel. In that sense, the Haxe alchemy memory implementation isn't necessarily better, and in fact the AS3 copyPixels() version could perform better on some other systems.
 
+The Haxe implementation has no limit of the number of n-entries as far as performance is concerned. However, memory usage/storage can be extremely high and time-consuming at the beginning, including storing all pixel data found in the images. However, once everything is cached, you'll get a consistent framerate throughout.
 
-Building With  ANT
-
-The build file is located in the root directory. It relies on a build.properties 
-file to run. I provide a template file called build.template.properties which you 
-can copy and rename to build.template. Once you do that open it up and lets change 
-a few key properties.
-
-You will need to set the following paths:
-
-	FLEX_HOME - path to your Flex SDK. If you have FlashBuilder installed it 
-	is located in the App’s dir under SDK 4.0.
-
-	android.sdk - path to your Android SDK
-
-	browser - On a PC you will want to use the path to the actual browser 
-	such as C:/Program Files/Mozilla Firefox/firefox.exe. On a mac the name 
-	of the browser will work such as Safari.
-
-Once you set these paths you should be able to run the ANT Build. The default build 
-is compile swf. After running it, the build will create a bin folder for you and 
-compile the swf in there. From there you can launch the index.html however you want. 
-There is an ANT target for local-run located in the compile-swf include build or use 
-the IDE to launch the index file and trigger the debugger, which is what I normally do.
+The ideal case for using the Haxe/Alchemy implementation is when your server or developer has already pre-processed the images and fitted them into the actual viewing size during scrolling. Also, for images to be scrolled horizontally, the images had to be read in a translated (rotate 90/270 degrees) fashion into memory, and the bitmap & bitmapData itself had to be rotated 90/270 degrees and the bitmap re-positioned/flipped. If the images loaded in were already rotated, these translations could be avoided on the Flash-side, improving startup time. Also, it's better to NOT cache all images into memory at once, but progressively load/cache images in at intervals.

@@ -26,9 +26,11 @@
 
 package
 {
-    import com.flashartofwar.BitmapScroller;
+    import com.flashartofwar.BitmapScrollerHaxe;
     import com.flashartofwar.behaviors.EaseScrollBehavior;
     import com.flashartofwar.ui.Slider;
+	import flash.display.BitmapData;
+	import flash.geom.Rectangle;
 
     import flash.display.Bitmap;
     import flash.display.Loader;
@@ -48,27 +50,31 @@ package
     import net.hires.debug.Stats;
 
 	[SWF( backgroundColor='0xFFFFFF', frameRate='120', width='480', height='800')]
-    public class BitmapScrollerApp extends Sprite
+    public class BitmapScrollerAppHaxe extends Sprite
     {
 
         private var preloadList:Array = ["image1.jpg","image2.jpg","image3.jpg","image4.jpg","image5.jpg","image6.jpg","image7.jpg","image8.jpg","image9.jpg","image10.jpg","image11.jpg","image12.jpg","image13.jpg","image14.jpg","image15.jpg","image16.jpg","image17.jpg","image18.jpg","image19.jpg","image20.jpg","image21.jpg","image22.jpg","image23.jpg","image24.jpg","image25.jpg","image26.jpg","image27.jpg","image28.jpg","image29.jpg"];
         private var baseURL:String = "images/";
         private var currentlyLoading:String;
         private var loader:Loader = new Loader();
-        private var bitmapScroller:BitmapScroller;
-        private var images:Array = new Array();
+        private var bitmapScroller:BitmapScrollerHaxe;
+        private var images:Vector.<BitmapData> = new Vector.<BitmapData>();
         private var easeScrollBehavior:EaseScrollBehavior;
         private var stats:Stats;
         private var isMouseDown:Boolean;
         private var slider:Slider;
         private var preloadStatus:TextField;
+		private var defaultImgHeight:Number;
+		
+		private var isMobile:Boolean = false;
 
-		public var isMobile:Boolean = false;
         /**
          *
          */
-        public function BitmapScrollerApp()
+        public function BitmapScrollerAppHaxe(imgHeight:Number=800)
         {
+			defaultImgHeight = imgHeight;
+			
             configureStage();
 
             if (isMobile)
@@ -128,8 +134,8 @@ package
          */
         private function onStageResize(event:Event = null):void
         {
-            bitmapScroller.width = slider.width = stage.stageWidth;
-            bitmapScroller.height = stage.stageHeight;
+            bitmapScroller.setWidth(  slider.width = stage.stageWidth );
+            bitmapScroller.setHeight( stage.stageHeight  );
             slider.y = stage.stageHeight - slider.height - 20;
 
             slider.width -= 40;
@@ -159,7 +165,16 @@ package
          */
         private function onEnterFrame(event:Event):void
         {
-            loop();
+            var percent:Number = slider.value / 100;
+            var s:Number = bitmapScroller.getTotalLength();
+            var t:Number = bitmapScroller.getWidth();
+
+            easeScrollBehavior.targetX = percent * (s - t);
+            //
+            easeScrollBehavior.update();
+            //
+			bitmapScroller.scrollX = easeScrollBehavior.scrollX;
+            bitmapScroller.render();
         }
 
         /**
@@ -205,11 +220,22 @@ package
         private function createBitmapScroller():void
         {
 
-            bitmapScroller = new BitmapScroller();
-            bitmapScroller.bitmapDataCollection = images;
+            bitmapScroller = new BitmapScrollerHaxe();
+			bitmapScroller.rotation = -270;
+			bitmapScroller.scaleY = -1;
+	
+			// new implementation
+            bitmapScroller.init(images, new Rectangle(0, 0, stage.stageWidth, defaultImgHeight) );
+		
+			
+			for each( var bmpData:BitmapData in images) {
+				bmpData.dispose();
+			}
+		
+		
             addChild(bitmapScroller);
-            bitmapScroller.width = stage.stageWidth;
-            bitmapScroller.height = stage.stageHeight;
+          //  bitmapScroller.setWidth( stage.stageWidth );
+          //  bitmapScroller.setHeight( stage.stageHeight );
 
         }
 
@@ -228,7 +254,7 @@ package
             else
             {
                 loadNext();
-                preloadStatus.text = preloadList.length + " Images Left To Load.";
+                preloadStatus.text = preloadList.length > 0 ? preloadList.length + " Images Left To Load." : "Caching images. Please wait...";
             }
         }
 
@@ -266,24 +292,6 @@ package
             currentlyLoading = null;
 
             preload();
-        }
-
-        /**
-         *
-         */
-        public function loop():void
-        {
-            var percent:Number = slider.value / 100;
-            var s:Number = bitmapScroller.totalWidth;
-            var t:Number = bitmapScroller.width;
-
-            easeScrollBehavior.targetX = percent * (s - t);
-            //
-            easeScrollBehavior.update();
-			
-            //
-			bitmapScroller.scrollX = easeScrollBehavior.scrollX;
-            bitmapScroller.render();
         }
 
         // This is for mobile touch support

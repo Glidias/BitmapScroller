@@ -33,6 +33,7 @@ package com.flashartofwar.behaviors
 
         public var targetX:Number;
         private var target:Object;
+		public var scrollX:Number; // inline record
 
         public function EaseScrollBehavior(target:Object, targetX:Number = 0)
         {
@@ -45,28 +46,32 @@ package com.flashartofwar.behaviors
             {
                 this.target = target;
                 targetX = targetX;
+				scrollX = 0;
             }
 
         }
 
         public function update():void
         {
-
+			/*
             if ((target.scrollX == targetX))
             {
                 return;
             }
             else
             {
-                var c:Number = targetX - target.scrollX;
-                var b:Number = target.scrollX;
-                target.scrollX = c * 25.0 / 256.0 + b;
-
+			*/
+                var c:Number = targetX - scrollX;
+                var b:Number = scrollX;
+				scrollX = c * 25 / 256 + b;
+                //target.scrollX = c * 25.0 / 256.0 + b;
+				/*
                 if (c < .01 && c > -.01)
                 {
                     target.scrollX = targetX;
                 }
-            }
+				*/
+            //}
 
 
         }
