@@ -24,7 +24,7 @@ The ideal case for using the Haxe/Alchemy implementation is when your server or 
 
 General observations between the 2 versions
 -------------------------------------------
-For both versions, i cranked the target framerate to 120fps to see how high you can get. For minimised screen sizes, both versions can get beyond the target framerate of 61fps.
+For both versions, i cranked the target framerate to 120fps to see how high one can get in fps. For drastically reduced screen sizes, both versions go beyond the target framerate of 61fps.
 
 For the standard AS3 CopyPixels version, after scrolling through all bitmapdata instances (ie. scrolling through the entire length of the timeline), apparently the scrolling can actually turn out faster than the Haxe/Alchemy's setPixels() version (meeting the target ideal framerate of 61fps compared to the Haxe/Alchemy version which lags behind).
 
