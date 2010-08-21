@@ -24,10 +24,10 @@
     <target name="asdoc" depends="asdoc.gen" description="generates ASDoc"/>
 
     <target name="compile" description="Compiles the project as a swf">
-        <runtarget target="compile-swf.compile" />
+		<runtarget target="compile-swf.compile" />
     </target>
 
-    <target name="full-build" depends="test,compile" description="Runs tests, compiles project, and optionally runs it.">
+    <target name="full-build" depends="compile" description="Runs tests, compiles project, and optionally runs it.">
         <if>
             <istrue value="${autolaunch.url}"/>
             <then><runtarget target="compile-swf.local-run"/></then>

@@ -137,21 +137,28 @@ package com.flashartofwar
 
             if (_invalid)
             {
+				
                 // We check to see if the size has changed. If it has we create a new bitmap. If not we clear it with fillRect
                 if (invalidSize)
                 {
-                    bitmapData = new BitmapData(internalSampleArea.width, internalSampleArea.height, true, 0x000000);
+                    bitmapData = new BitmapData(internalSampleArea.width, internalSampleArea.height, false, 0x000000);
                 }
                 else
                 {
                     bitmapData.fillRect(internalSampleArea, 0);
                 }
 
+				bitmapData.lock();
                 // Call sample to get the party started
                 draw(internalSampleArea.clone());
-
+		
                 // Clear any invalidation
-                clearInvalidation();
+                //clearInvalidation();
+					 _invalid = false;
+					invalidSize = false;
+					invalidScroll = false;
+					invalidVisuals = false;
+				bitmapData.unlock();
             }
         }
 

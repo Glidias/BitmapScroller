@@ -7,7 +7,7 @@ Getting Started
 ------------------
 The haxelib.hxml will compile a matching SWC for you, if you have Haxe installed, which will contain the compiled code from the hx file.
 
-Compile BitmapScrollerAppHaxe.as in Flash Player 10 with the compiled haxelib.swc library. I don't have a ANT build script at the moment for this (the build.xml is for the standard non-Haxe version). I also replaced the need to -define=CONFIG::mobile to a simple local boolean variable that can be set in the document classes. 
+Compile BitmapScrollerAppHaxe.as in Flash Player 10 with the compiled haxelib.swc library. The build.xml and build.properties has been adjusted to be able to compile the Haxe version. I also replaced the need to -define=CONFIG::mobile to a simple local boolean variable that can be set in the document classes. 
 
 About this Fork
 --------------
