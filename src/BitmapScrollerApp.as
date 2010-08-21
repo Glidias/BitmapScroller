@@ -63,7 +63,7 @@ package
         private var slider:Slider;
         private var preloadStatus:TextField;
 
-		public var isMobile:Boolean = false;
+		
         /**
          *
          */
@@ -71,7 +71,7 @@ package
         {
             configureStage();
 
-            if (isMobile)
+            if (CONFIG::mobile)
             {
                 baseURL = "/" + baseURL;
             }
@@ -105,7 +105,7 @@ package
             createEaseScrollBehavior();
             createStats();
 
-            if (!isMobile)
+            if (!CONFIG::mobile)
             {
                 // Once everything is set up add stage resize listeners
                 this.stage.addEventListener(Event.RESIZE, onStageResize);
@@ -179,7 +179,7 @@ package
             var sHeight:int = 10;
             var dWidth:int = 40;
             var corners:int = 5;
-            if (isMobile)
+            if (CONFIG::mobile)
             {
                 sHeight = 20;
                 dWidth = 60;
